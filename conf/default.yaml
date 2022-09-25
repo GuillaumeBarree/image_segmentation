@@ -1,0 +1,10 @@
+# metadata specialised for each experiment
+core:
+  project_name: image_segmentation
+  version: 0.0.1
+  tags: null
+
+defaults:
+  - hydra: default
+  - nn: default
+  - _self_
