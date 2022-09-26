@@ -1,0 +1,41 @@
+data:
+
+  _target_: image_segmentation.data.datamodule.DataModule
+
+  data_path: data/membrane
+
+  stage: ~ # None, fit or test
+
+  batch_size:
+    train: 2
+    val: 2
+    test: 2
+
+  resize:
+      _target_: tensorflow.keras.layers.Resizing
+      height: 256
+      width: 256
+      crop_to_aspect_ratio: False
+
+  data_augmentation:
+    random_flip:
+      _target_: tensorflow.keras.layers.RandomFlip
+      seed: 0
+    random_translation:
+      _target_: tensorflow.keras.layers.RandomTranslation
+      seed: 0
+      height_factor: 0.05
+      width_factor: 0.05
+      fill_mode: nearest
+    random_rotation:
+      _target_: tensorflow.keras.layers.RandomRotation
+      seed: 0
+      factor: 0.2
+      fill_mode: nearest
+    random_zoom:
+      _target_: tensorflow.keras.layers.RandomZoom
+      seed: 0
+      height_factor: 0.05
+      fill_mode: nearest
+
+  val_percentage: 0.2
