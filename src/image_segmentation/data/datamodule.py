@@ -11,6 +11,7 @@ from image_segmentation.common import PROJECT_ROOT
 from image_segmentation.data.utils import Augment
 from image_segmentation.data.utils import load_test_images
 from image_segmentation.data.utils import load_train_valid_images
+from image_segmentation.data.utils import Resize
 from imutils import paths
 from omegaconf import DictConfig
 
@@ -24,12 +25,14 @@ class DataModule:
     def __init__(
         self, data_path: DictConfig,
         batch_size: DictConfig,
+        resize: DictConfig,
         stage: str | None,
         data_augmentation: DictConfig,
         val_percentage: float,
     ) -> None:
         self.data_path = data_path
         self.batch_size = batch_size
+        self.resize = resize
         self.stage = stage
         self.data_augmentation = data_augmentation
         self.val_percentage = val_percentage
@@ -114,11 +117,13 @@ class DataModule:
         if self.train_dataset is None:
             self.setup()
 
+        resize = Resize(resize=self.resize)
         augment = Augment(data_aug=self.data_augmentation)
         return (
             self.train_dataset
                 .shuffle(len(self.train_paths))
                 .map(load_train_valid_images, num_parallel_calls=tf.data.AUTOTUNE)
+                .map(resize)
                 .map(augment)
                 .cache()
                 .batch(self.batch_size.train)
@@ -137,9 +142,11 @@ class DataModule:
         if self.val_dataset is None:
             self.setup()
 
+        resize = Resize(resize=self.resize)
         return (
             self.val_dataset
                 .map(load_train_valid_images, num_parallel_calls=tf.data.AUTOTUNE)
+                .map(resize)
                 .cache()
                 .batch(self.batch_size.val)
                 .prefetch(tf.data.AUTOTUNE)
@@ -156,9 +163,11 @@ class DataModule:
         if self.test_dataset is None:
             self.setup()
 
+        resize = Resize(resize=self.resize)
         return (
             self.test_dataset
                 .map(load_test_images, num_parallel_calls=tf.data.AUTOTUNE)
+                .map(resize)
                 .cache()
                 .batch(self.batch_size.test)
                 .prefetch(tf.data.AUTOTUNE)

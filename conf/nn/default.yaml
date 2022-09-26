@@ -11,12 +11,13 @@ data:
     val: 2
     test: 2
 
-  data_augmentation:
-    resize:
+  resize:
       _target_: tensorflow.keras.layers.Resizing
       height: 256
       width: 256
       crop_to_aspect_ratio: False
+
+  data_augmentation:
     random_flip:
       _target_: tensorflow.keras.layers.RandomFlip
       seed: 0

@@ -48,6 +48,35 @@ def load_test_images(img_path: str) -> EagerTensor:
     return img
 
 
+class Resize(tf.keras.layers.Layer):
+    """Personal Resize class.
+
+    The purpose of this class is to apply a series of transformations to images
+    and their associated masks from a configuration file.
+    """
+
+    def __init__(self, resize):
+        super().__init__()
+        self.resize = resize
+
+        # Use instantiate function from hydra for simplicity
+        self.resize_inputs = hydra.utils.instantiate(self.resize)
+
+    def call(
+        self,
+        *inputs: EagerTensor | tuple[EagerTensor, EagerTensor],
+    ) -> EagerTensor | tuple[EagerTensor, EagerTensor]:
+        """Resize images and mask if needed
+
+        Returns:
+            Union[EagerTensor,  tuple[EagerTensor, EagerTensor]]: Resized images
+        """
+        if len(inputs) == 1:
+            return self.resize_inputs(inputs)
+        else:
+            return self.resize_inputs(inputs[0]), self.resize_inputs(inputs[1])
+
+
 class Augment(tf.keras.layers.Layer):
     """Personal data Augmentation class.
 
