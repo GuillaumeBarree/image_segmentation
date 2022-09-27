@@ -13,8 +13,8 @@ data:
 
   resize:
       _target_: tensorflow.keras.layers.Resizing
-      height: 256
-      width: 256
+      height: 572
+      width: 572
       crop_to_aspect_ratio: False
 
   data_augmentation:
@@ -39,3 +39,38 @@ data:
       fill_mode: nearest
 
   val_percentage: 0.2
+
+unet:
+  structure:
+    num_pooling: 4
+    num_layers_before_pooling: 2
+    initial_num_filters: 64
+    pool_size: 2
+    block_type:
+      name: standard_block
+      path:
+        _target_: image_segmentation.models.tf_unet.unet_block.StandardBlock
+      name_up: standard_up_block
+      path_up:
+        _target_: image_segmentation.models.tf_unet.unet_block.StandardUpBlock
+
+  blocks:
+    standard_block:
+      kernel_size: 3
+      padding: same
+      kernel_initializer: he_normal
+      activation: relu
+      batch_norm: True
+
+    standard_up_block:
+      kernel_size: 2
+      padding: same
+      kernel_initializer: he_normal
+      activation: relu
+
+    final_block:
+      _target_: image_segmentation.models.tf_unet.unet_block.FinalBlock
+      kernel_size: 3
+      padding: same
+      kernel_initializer: he_normal
+      activation: relu
