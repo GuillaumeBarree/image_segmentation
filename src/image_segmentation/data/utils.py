@@ -72,7 +72,7 @@ class Resize(tf.keras.layers.Layer):
             Union[EagerTensor,  tuple[EagerTensor, EagerTensor]]: Resized images
         """
         if len(inputs) == 1:
-            return self.resize_inputs(inputs)
+            return self.resize_inputs(inputs[0])
         else:
             return self.resize_inputs(inputs[0]), self.resize_inputs(inputs[1])
 

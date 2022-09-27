@@ -3,6 +3,8 @@ from __future__ import annotations
 import hydra
 from image_segmentation.models.tf_unet.unet_block import ConcatCropFeatureMapBlock
 from image_segmentation.models.tf_unet.unet_block import MirrorPadding
+from image_segmentation.models.tf_unet.utils import select_block_config
+from image_segmentation.models.tf_unet.utils import select_block_config_up
 from omegaconf import DictConfig
 from tensorflow.keras import Input
 from tensorflow.keras import layers
@@ -62,7 +64,6 @@ def unet_constructor(
         x = hydra.utils.instantiate(block_type.path_up, num_filters=num_filters, pool_size=pool_size, **block_config_up)(x)
 
         # Concatenate vector with residual connection
-        # x = layers.Concatenate(axis=-1)([residual_connection[id_pooling_up], x])
         x = ConcatCropFeatureMapBlock()(x, residual_connection[id_pooling_up])
         # Iterate over the number of layers before pooling
         for _ in range(num_layers_before_pooling):
@@ -75,39 +76,3 @@ def unet_constructor(
     model = Model(inputs, outputs, name='unet')
 
     return model
-
-
-def select_block_config(block_type: DictConfig, blocks_config: DictConfig) -> DictConfig:
-    """Retrieve the block configuration you have selected.
-
-    Args:
-        block_type (DictConfig): which type block to use for your UNet architecture.
-        blocks_config (DictConfig): configuration for the different block types.
-
-    Returns:
-        DictConfig: the configuration of the block you have selected
-    """
-    if block_type.name == 'standard_block':
-        return blocks_config.standard_block
-    elif block_type.name == 'resnet_block':
-        return blocks_config.resnet_block
-    else:
-        return blocks_config.standard_block
-
-
-def select_block_config_up(block_type: DictConfig, blocks_config: DictConfig) -> DictConfig:
-    """Retrieve the block configuration for the up sampling of the expansive path.
-    For now, only StardardUpBlock is available, but Conv2DTranspose will be available in
-    the next release.
-
-    Args:
-        block_type (DictConfig): which type block to use for your UNet architecture.
-        blocks_config (DictConfig): configuration for the different block types.
-
-    Returns:
-        DictConfig: the configuration of the block you have selected
-    """
-    if block_type.name_up == 'standard_up_block':
-        return blocks_config.standard_up_block
-    else:
-        return blocks_config.standard_up_block

@@ -115,7 +115,6 @@ class StandardUpBlock(layers.Layer):
             padding=self.padding,
             num_filters=self.num_filters,
             activation=self.activation,
-            batch_norm=self.batch_norm,
             **super().get_config(),
         )
 
@@ -155,6 +154,7 @@ class FinalBlock(layers.Layer):
 
     def __init__(
         self,
+        filters: int,
         padding: str,
         kernel_size: int | tuple[int, int],
         kernel_initializer: str,
@@ -163,13 +163,14 @@ class FinalBlock(layers.Layer):
     ) -> None:
         super().__init__(**kwargs)
 
+        self.filters = filters
         self.padding = padding
         self.kernel_size = kernel_size
         self.kernel_initializer = kernel_initializer
         self.activation = activation
 
         self.conv2d_1 = layers.Conv2D(
-            filters=2,
+            filters=filters,
             kernel_size=self.kernel_size,
             kernel_initializer=self.kernel_initializer,
             padding=self.padding,

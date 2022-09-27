@@ -8,7 +8,11 @@ import omegaconf
 import tensorflow as tf
 from image_segmentation.common import PROJECT_ROOT
 from image_segmentation.data.datamodule import DataModule
+from image_segmentation.models.models import build_callbacks
+from image_segmentation.models.models import get_compiled_model
+from image_segmentation.models.tf_unet.unet import unet_constructor
 from omegaconf import DictConfig
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 
 pylogger = logging.getLogger(__name__)
@@ -21,6 +25,11 @@ def run(cfg: DictConfig):
     Args:
         cfg (DictConfig): configuration, defined by Hydra in /conf
     """
+    # Instantiate useful constant
+    original_height = cfg.nn.data.resize.height
+    original_width = cfg.nn.data.resize.width
+    original_img_size = (original_height, original_width)
+
     # Instantiate datamodule
     pylogger.info(f"Instantiating <{cfg.nn.data['_target_']}>")
     datamodule: DataModule = hydra.utils.instantiate(cfg.nn.data, _recursive_=False)
@@ -44,6 +53,30 @@ def run(cfg: DictConfig):
         test_dataloader: tf.data.Dataset = datamodule.test_dataloader()
 
         print(f'Test DataLoader shape: {len(test_dataloader)}')
+
+    # Instantiate UNet model
+    unet_model = unet_constructor(
+        image_size=original_img_size,
+        blocks_config=cfg.nn.unet.blocks,
+        **cfg.nn.unet.structure,
+    )
+
+    unet_model = get_compiled_model(
+        model=unet_model,
+        optimizer_config=cfg.nn.module.optimizer,
+        custom_loss_config=cfg.nn.module.custom_loss,
+        metrics_config=cfg.nn.module.metrics,
+    )
+
+    # Callback
+    callbacks = build_callbacks(cfg.train.callbacks)
+
+    unet_model.fit(train_dataloader, epochs=cfg.train.trainer.max_epochs, validation_data=val_dataloader, callbacks=callbacks)
+
+    results = unet_model.predict(test_dataloader, verbose=1)
+
+    print(results.shape)
+    print('DONE')
 
 
 @hydra.main(version_base='1.2', config_path=str(PROJECT_ROOT / 'conf'), config_name='default.yaml')

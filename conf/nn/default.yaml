@@ -13,8 +13,8 @@ data:
 
   resize:
       _target_: tensorflow.keras.layers.Resizing
-      height: 572
-      width: 572
+      height: 256
+      width: 256
       crop_to_aspect_ratio: False
 
   data_augmentation:
@@ -43,8 +43,8 @@ data:
 unet:
   structure:
     num_pooling: 4
-    num_layers_before_pooling: 2
-    initial_num_filters: 64
+    num_layers_before_pooling: 1
+    initial_num_filters: 32
     pool_size: 2
     block_type:
       name: standard_block
@@ -57,10 +57,10 @@ unet:
   blocks:
     standard_block:
       kernel_size: 3
-      padding: same
+      padding: valid
       kernel_initializer: he_normal
       activation: relu
-      batch_norm: True
+      batch_norm: False
 
     standard_up_block:
       kernel_size: 2
@@ -70,7 +70,41 @@ unet:
 
     final_block:
       _target_: image_segmentation.models.tf_unet.unet_block.FinalBlock
+      filters: 2
       kernel_size: 3
       padding: same
       kernel_initializer: he_normal
       activation: relu
+
+module:
+  optimizer:
+      #  Adam-oriented deep learning
+      _target_: tensorflow.keras.optimizers.Adam
+      #  These are all default parameters for the Adam optimizer
+      learning_rate: 0.001
+      beta_1: 0.9
+      beta_2: 0.999
+      epsilon: 1e-07
+      amsgrad: False
+      name: Adam
+
+  custom_loss:
+    mode: mirror
+    loss:
+      _target_: tensorflow.keras.losses.BinaryCrossentropy
+      from_logits: False
+
+  metrics:
+    categorical_accuracy:
+      _target_: tensorflow.keras.metrics.CategoricalAccuracy
+    categorical_crossentropy:
+      _target_: tensorflow.keras.metrics.CategoricalCrossentropy
+      from_logits: False
+
+  lr_scheduler:
+    _target_: torch.optim.lr_scheduler.CosineAnnealingWarmRestarts
+    T_0: 10
+    T_mult: 2
+    eta_min: 0 # min value for the lr
+    last_epoch: -1
+    verbose: False
