@@ -69,45 +69,45 @@ module: ...
 #### Data
 
 ```yaml
-  _target_: image_segmentation.data.datamodule.DataModule
+_target_: image_segmentation.data.datamodule.DataModule
 
-  data_path: data/membrane
+data_path: data/membrane
 
-  batch_size:
-    train: 2
-    val: 2
-    test: 2
+batch_size:
+  train: 2
+  val: 2
+  test: 2
 
-  repeat: 4
+repeat: 4
 
-  resize:
-      _target_: tensorflow.keras.layers.Resizing
-      height: 256
-      width: 256
-      crop_to_aspect_ratio: False
+resize:
+    _target_: tensorflow.keras.layers.Resizing
+    height: 256
+    width: 256
+    crop_to_aspect_ratio: False
 
-  data_augmentation:
-    random_flip:
-      _target_: tensorflow.keras.layers.RandomFlip
-      seed: 0
-    random_translation:
-      _target_: tensorflow.keras.layers.RandomTranslation
-      seed: 0
-      height_factor: 0.05
-      width_factor: 0.05
-      fill_mode: nearest
-    random_rotation:
-      _target_: tensorflow.keras.layers.RandomRotation
-      seed: 0
-      factor: 0.2
-      fill_mode: nearest
-    random_zoom:
-      _target_: tensorflow.keras.layers.RandomZoom
-      seed: 0
-      height_factor: 0.05
-      fill_mode: nearest
+data_augmentation:
+  random_flip:
+    _target_: tensorflow.keras.layers.RandomFlip
+    seed: 0
+  random_translation:
+    _target_: tensorflow.keras.layers.RandomTranslation
+    seed: 0
+    height_factor: 0.05
+    width_factor: 0.05
+    fill_mode: nearest
+  random_rotation:
+    _target_: tensorflow.keras.layers.RandomRotation
+    seed: 0
+    factor: 0.2
+    fill_mode: nearest
+  random_zoom:
+    _target_: tensorflow.keras.layers.RandomZoom
+    seed: 0
+    height_factor: 0.05
+    fill_mode: nearest
 
-  val_percentage: 0.2
+val_percentage: 0.2
 ```
 
 * `resize`: Layer that allows you you to resize you input images. For now it calls the [Resizing layers](https://www.tensorflow.org/api_docs/python/tf/keras/layers/Resizing), but you can change it with [any resizing layers offered by Tensorflow](https://keras.io/api/layers/preprocessing_layers/image_preprocessing/).
@@ -119,44 +119,43 @@ module: ...
 
 ```yaml
 structure:
-    num_pooling: 3
-    num_layers_before_pooling: 1
-    initial_num_filters: 32
-    pool_size: 2
-    block_type:
-      name: resnet_block
-      path:
-        _target_: image_segmentation.models.tf_unet.unet_block.ResnetBlock
-      name_up: standard_up_block
-      path_up:
-        _target_: image_segmentation.models.tf_unet.unet_block.StandardUpBlock
+  num_pooling: 3
+  num_layers_before_pooling: 1
+  initial_num_filters: 32
+  pool_size: 2
+  block_type:
+    name_down: resnet_block
+    name_up: standard_up_block
 
-  blocks:
-    standard_block:
-      kernel_size: 3
-      padding: valid
-      kernel_initializer: he_normal
-      activation: relu
-      batch_norm: True
+blocks:
+  standard_block:
+    _target_: image_segmentation.models.tf_unet.unet_block.StandardBlock
+    kernel_size: 3
+    padding: valid
+    kernel_initializer: he_normal
+    activation: relu
+    batch_norm: True
 
-    resnet_block:
-      kernel_size: 3
-      kernel_initializer: he_normal
-      activation: relu
+  resnet_block:
+    _target_: image_segmentation.models.tf_unet.unet_block.ResnetBlock
+    kernel_size: 3
+    kernel_initializer: he_normal
+    activation: relu
 
-    standard_up_block:
-      kernel_size: 2
-      padding: same
-      kernel_initializer: he_normal
-      activation: relu
+  standard_up_block:
+    _target_: image_segmentation.models.tf_unet.unet_block.StandardUpBlock
+    kernel_size: 2
+    padding: same
+    kernel_initializer: he_normal
+    activation: relu
 
-    final_block:
-      _target_: image_segmentation.models.tf_unet.unet_block.FinalBlock
-      filters: 2
-      kernel_size: 3
-      padding: same
-      kernel_initializer: he_normal
-      activation: relu
+  final_block:
+    _target_: image_segmentation.models.tf_unet.unet_block.FinalBlock
+    filters: 2
+    kernel_size: 3
+    padding: same
+    kernel_initializer: he_normal
+    activation: relu
 ```
 
 Here we will find the U-Net structure configuration
@@ -169,15 +168,7 @@ Here we will find the U-Net structure configuration
   * The first one defines the block you want to use for the contracting path. Two possibilities are available.
 
   ```yaml
-  name: standard_block
-  path:
-    _target_: image_segmentation.models.tf_unet.unet_block.StandardBlock
-  ```
-
-  ```yaml
-  name: resnet_block
-  path:
-    _target_: image_segmentation.models.tf_unet.unet_block.ResnetBlock
+  name_down: standard_block or resnet_block
   ```
 
   * The second one defines the block you want to use for the expensive path. Only one block type is available for this part. Next step could be implementing a TransConv2D layer.
@@ -195,31 +186,31 @@ And bellow the struccture section, you will find all the information to configur
 
 ```yaml
 info:
-    name: unet
-    mode: training
-    load_weights: ~
+  name: unet
+  mode: training
+  load_weights: ~
 
 optimizer:
-    _target_: tensorflow.keras.optimizers.Adam
-    learning_rate: 0.001
-    beta_1: 0.9
-    beta_2: 0.999
-    epsilon: 1e-07
-    amsgrad: False
-    name: Adam
+  _target_: tensorflow.keras.optimizers.Adam
+  learning_rate: 0.001
+  beta_1: 0.9
+  beta_2: 0.999
+  epsilon: 1e-07
+  amsgrad: False
+  name: Adam
 
 custom_loss:
-    mode: crop
-    loss:
-        _target_: tensorflow.keras.losses.BinaryCrossentropy
-        from_logits: False
+  mode: crop
+  loss:
+    _target_: tensorflow.keras.losses.BinaryCrossentropy
+    from_logits: False
 
 metrics:
-    categorical_accuracy:
-        _target_: tensorflow.keras.metrics.CategoricalAccuracy
-    categorical_crossentropy:
-        _target_: tensorflow.keras.metrics.CategoricalCrossentropy
-        from_logits: False
+  categorical_accuracy:
+    _target_: tensorflow.keras.metrics.CategoricalAccuracy
+  categorical_crossentropy:
+    _target_: tensorflow.keras.metrics.CategoricalCrossentropy
+    from_logits: False
 ```
 
 * `info`: Contains information about how you want to use the package.

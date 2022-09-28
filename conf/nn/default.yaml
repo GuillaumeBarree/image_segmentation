@@ -47,15 +47,12 @@ unet:
     initial_num_filters: 32
     pool_size: 2
     block_type:
-      name: resnet_block
-      path:
-        _target_: image_segmentation.models.tf_unet.unet_block.ResnetBlock
+      name_down: resnet_block
       name_up: standard_up_block
-      path_up:
-        _target_: image_segmentation.models.tf_unet.unet_block.StandardUpBlock
 
   blocks:
     standard_block:
+      _target_: image_segmentation.models.tf_unet.unet_block.StandardBlock
       kernel_size: 3
       padding: valid
       kernel_initializer: he_normal
@@ -63,11 +60,13 @@ unet:
       batch_norm: True
 
     resnet_block:
+      _target_: image_segmentation.models.tf_unet.unet_block.ResnetBlock
       kernel_size: 3
       kernel_initializer: he_normal
       activation: relu
 
     standard_up_block:
+      _target_: image_segmentation.models.tf_unet.unet_block.StandardUpBlock
       kernel_size: 2
       padding: same
       kernel_initializer: he_normal
