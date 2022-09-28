@@ -107,11 +107,3 @@ module:
     categorical_crossentropy:
       _target_: tensorflow.keras.metrics.CategoricalCrossentropy
       from_logits: False
-
-  lr_scheduler:
-    _target_: torch.optim.lr_scheduler.CosineAnnealingWarmRestarts
-    T_0: 10
-    T_mult: 2
-    eta_min: 0 # min value for the lr
-    last_epoch: -1
-    verbose: False
