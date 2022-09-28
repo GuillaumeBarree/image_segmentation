@@ -2,9 +2,10 @@
 # AI FRAMEWORK #
 ################
 
+GitPython==3.1.27
 hydra-core==1.2.0
 imutils==0.5.4
 matplotlib==3.6.0
-omegacong==2.2.3
+omegaconf==2.2.3
 opencv-python==4.6.0.66
 tensorflow==2.10.0
