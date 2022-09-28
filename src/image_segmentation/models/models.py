@@ -5,7 +5,6 @@ from typing import Sequence
 import hydra
 import tensorflow as tf
 from omegaconf import DictConfig
-from omegaconf import ListConfig
 from tensorflow import keras
 from tensorflow.keras import Model
 from tensorflow.keras.callbacks import Callback
@@ -18,7 +17,7 @@ def get_compiled_model(
     metrics_config: DictConfig,
 ) -> Model:
     loss = CustomLoss(
-        original_output_size=(572, 572),
+        original_output_size=custom_loss_config.output_shape,
         loss_function=custom_loss_config.loss,
         mode=custom_loss_config.mode,
     )
@@ -63,17 +62,11 @@ class CustomLoss(keras.losses.Loss):
             return self.loss_function(y_true=y_true, y_pred=y_pred)
 
 
-def build_callbacks(cfg: ListConfig, *args: Callback) -> list[Callback]:
+def build_callbacks(callbacks: DictConfig) -> list[Callback]:
     """Instantiate the callbacks given their configuration.
     Args:
         cfg: a list of callbacks instantiable configuration
-        *args: a list of extra callbacks already instantiated
     Returns:
         the complete list of callbacks to use
     """
-    callbacks: list[Callback] = list(args)
-
-    for callback in cfg:
-        callbacks.append(hydra.utils.instantiate(callback, _recursive_=False))
-
-    return callbacks
+    return [hydra.utils.instantiate(callbacks[callback]) for callback in callbacks.keys()]

@@ -288,22 +288,29 @@ class MirrorPadding(layers.Layer):
     def __init__(
         self,
         img_size,
+        img_output_shape,
         mode: str = 'REFLECT',
         **kwargs,
     ) -> None:
         super().__init__(**kwargs)
 
         self.img_size = img_size
+        self.img_output_shape = img_output_shape
         self.mode = mode
+        self.raised_issue = False
+
+        self.height_diff = (self.img_size[0] - self.img_output_shape[0]) // 2
+        self.width_diff = (self.img_size[1] - self.img_output_shape[1]) // 2
+
+        if self.height_diff > self.img_output_shape[0]:
+            print('Warning, the original output image dimension is to small for Reflect Padding')
+            print(f'Paddings must be no greater than the dimension size: {self.height_diff}, {self.height_diff} greater than {img_output_shape[0]}')
+            print('Final layer Padding has thus be set to CONSTANT')
+            self.mode = 'CONSTANT'
 
     def call(self, inputs):
         x = inputs
-        x_shape = tf.shape(x)
-
-        height_diff = (self.img_size[0] - x_shape[1]) // 2
-        width_diff = (self.img_size[1] - x_shape[2]) // 2
-
-        x = tf.pad(x, [[0, 0], [height_diff, height_diff], [width_diff, width_diff], [0, 0]], mode=self.mode)
+        x = tf.pad(x, [[0, 0], [self.height_diff, self.height_diff], [self.width_diff, self.width_diff], [0, 0]], mode=self.mode)
         return x
 
     def get_config(self):

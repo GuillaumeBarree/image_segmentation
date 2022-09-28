@@ -71,14 +71,16 @@ def unet_constructor(
             x = StandardBlock(num_filters=num_filters, **blocks_config.standard_block)(x)
 
     x = hydra.utils.instantiate(blocks_config.final_block)(x)
-    original_output_size = x.shape
 
     # Resize the output if necessary to be able to compare it with the mask
     if x.shape[1] != image_size[0]:
-        outputs = MirrorPadding(img_size=(image_size[0], image_size[1], 1))(x)
+        outputs = MirrorPadding(
+            img_size=(image_size[0], image_size[1], 1),
+            img_output_shape=(x.shape[1:3]),
+        )(x)
     else:
         outputs = x
 
     model = Model(inputs, outputs, name='unet')
 
-    return model, original_output_size
+    return model

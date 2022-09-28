@@ -4,8 +4,6 @@ data:
 
   data_path: data/membrane
 
-  stage: ~ # None, fit or test
-
   batch_size:
     train: 2
     val: 2
@@ -44,14 +42,14 @@ data:
 
 unet:
   structure:
-    num_pooling: 4
+    num_pooling: 3
     num_layers_before_pooling: 1
     initial_num_filters: 32
     pool_size: 2
     block_type:
-      name: standard_block
+      name: resnet_block
       path:
-        _target_: image_segmentation.models.tf_unet.unet_block.StandardBlock
+        _target_: image_segmentation.models.tf_unet.unet_block.ResnetBlock
       name_up: standard_up_block
       path_up:
         _target_: image_segmentation.models.tf_unet.unet_block.StandardUpBlock
@@ -62,7 +60,7 @@ unet:
       padding: valid
       kernel_initializer: he_normal
       activation: relu
-      batch_norm: False
+      batch_norm: True
 
     resnet_block:
       kernel_size: 3
@@ -84,6 +82,10 @@ unet:
       activation: relu
 
 module:
+  info:
+    name: 'unet'
+    mode: training
+    load_weights: ~
   optimizer:
       #  Adam-oriented deep learning
       _target_: tensorflow.keras.optimizers.Adam
@@ -96,7 +98,7 @@ module:
       name: Adam
 
   custom_loss:
-    mode: mirror
+    mode: crop
     loss:
       _target_: tensorflow.keras.losses.BinaryCrossentropy
       from_logits: False
