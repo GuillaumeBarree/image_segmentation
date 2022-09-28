@@ -20,7 +20,7 @@ callbacks:
     save_freq: epoch
 
   - _target_: tensorflow.keras.callbacks.TensorBoard
-    log_dir: tensorbord/
+    log_dir: tensorboard/
 
   - _target_: tensorflow.keras.callbacks.ReduceLROnPlateau
     monitor: val_loss
