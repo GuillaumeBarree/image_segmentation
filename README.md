@@ -1,4 +1,4 @@
-# Tensorflow implementation of deep learning framework -- Unet
+# <p style="text-align:center"> Tensorflow implementation of deep learning framework</p> <br> <p style="text-align:center"> Unet</p>
 <div id="top"></div>
 <br />
 <div align="center">
@@ -145,7 +145,7 @@ Not done yet
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-**All our project is configurable using configuration files. Their are available in the `conf` folder. For more details about these configuration files, please refer to our specific documentation [[here]](https://github.com/GuillaumeBarree/image_segmentation)**
+**All this project is configurable using configuration files. Their are available in the `conf` folder. For more details about these configuration files, please refer to our specific documentation [[here]](https://github.com/GuillaumeBarree/image_segmentation)**
 
 ### Launch the training from scratch
 
