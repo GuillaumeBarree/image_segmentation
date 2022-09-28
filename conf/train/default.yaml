@@ -1,0 +1,35 @@
+trainer:
+  max_epochs: 40
+
+callbacks:
+  earlystopping:
+    _target_: tensorflow.keras.callbacks.EarlyStopping
+    monitor: val_loss
+    min_delta: 0
+    patience: 5
+    verbose: 0
+    mode: auto
+    restore_best_weights: False
+
+  model_checkpoint:
+    _target_: tensorflow.keras.callbacks.ModelCheckpoint
+    filepath: models/unet/unet_membrane.hdf5
+    monitor: val_loss
+    verbose: 0
+    save_best_only: True
+    save_weights_only: False
+    mode: auto
+    save_freq: epoch
+
+  tensorboard:
+    _target_: tensorflow.keras.callbacks.TensorBoard
+    log_dir: tensorboard/
+
+  reduce_on_plateau:
+    _target_: tensorflow.keras.callbacks.ReduceLROnPlateau
+    monitor: val_loss
+    factor: 0.2
+    patience: 3
+    verbose: 0
+    mode: auto
+    min_delta: 0.01
