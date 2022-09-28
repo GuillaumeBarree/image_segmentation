@@ -55,7 +55,7 @@ def run(cfg: DictConfig):
         print(f'Test DataLoader shape: {len(test_dataloader)}')
 
     # Instantiate UNet model
-    unet_model = unet_constructor(
+    unet_model, original_output_size = unet_constructor(
         image_size=original_img_size,
         blocks_config=cfg.nn.unet.blocks,
         **cfg.nn.unet.structure,

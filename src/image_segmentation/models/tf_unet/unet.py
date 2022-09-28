@@ -3,6 +3,7 @@ from __future__ import annotations
 import hydra
 from image_segmentation.models.tf_unet.unet_block import ConcatCropFeatureMapBlock
 from image_segmentation.models.tf_unet.unet_block import MirrorPadding
+from image_segmentation.models.tf_unet.unet_block import StandardBlock
 from image_segmentation.models.tf_unet.utils import select_block_config
 from image_segmentation.models.tf_unet.utils import select_block_config_up
 from omegaconf import DictConfig
@@ -67,12 +68,17 @@ def unet_constructor(
         x = ConcatCropFeatureMapBlock()(x, residual_connection[id_pooling_up])
         # Iterate over the number of layers before pooling
         for _ in range(num_layers_before_pooling):
-            x = hydra.utils.instantiate(block_type.path, num_filters=num_filters, **block_config)(x)
+            x = StandardBlock(num_filters=num_filters, **blocks_config.standard_block)(x)
 
     x = hydra.utils.instantiate(blocks_config.final_block)(x)
+    original_output_size = x.shape
 
-    outputs = MirrorPadding(img_size=(image_size[0], image_size[1], 1))(x)
+    # Resize the output if necessary to be able to compare it with the mask
+    if x.shape[1] != image_size[0]:
+        outputs = MirrorPadding(img_size=(image_size[0], image_size[1], 1))(x)
+    else:
+        outputs = x
 
     model = Model(inputs, outputs, name='unet')
 
-    return model
+    return model, original_output_size

@@ -25,6 +25,7 @@ class DataModule:
     def __init__(
         self, data_path: DictConfig,
         batch_size: DictConfig,
+        repeat: int,
         resize: DictConfig,
         stage: str | None,
         data_augmentation: DictConfig,
@@ -32,6 +33,7 @@ class DataModule:
     ) -> None:
         self.data_path = data_path
         self.batch_size = batch_size
+        self.repeat = repeat
         self.resize = resize
         self.stage = stage
         self.data_augmentation = data_augmentation
@@ -122,6 +124,7 @@ class DataModule:
         return (
             self.train_dataset
                 .shuffle(len(self.train_paths))
+                .repeat(count=self.repeat)
                 .map(load_train_valid_images, num_parallel_calls=tf.data.AUTOTUNE)
                 .map(resize)
                 .map(augment)

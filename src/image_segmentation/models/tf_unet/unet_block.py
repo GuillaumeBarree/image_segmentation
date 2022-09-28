@@ -64,6 +64,86 @@ class StandardBlock(layers.Layer):
         )
 
 
+class ResnetBlock(layers.Layer):
+    """ResnetBlock Block.
+    It is compose of:
+        - Conv2D -> Batch Norm -> Activation
+        - Conv2D -> Batch Norm -> Activation
+        - Add
+    """
+
+    def __init__(
+        self,
+        kernel_size: int | tuple[int, int],
+        num_filters: int,
+        kernel_initializer: str,
+        activation: str,
+        **kwargs,
+    ) -> None:
+        super().__init__(**kwargs)
+
+        self.kernel_size = kernel_size
+        self.num_filters = num_filters
+        self.kernel_initializer = kernel_initializer
+        self.activation = activation
+
+        # Layer 1
+        self.conv2d_1 = layers.Conv2D(
+            filters=self.num_filters,
+            padding='same',
+            kernel_size=self.kernel_size,
+            kernel_initializer=self.kernel_initializer,
+        )
+
+        self.batch_norm_layer_1 = layers.BatchNormalization(axis=3)
+
+        self.activation_layer_1 = layers.Activation(self.activation)
+
+        # Layer 2
+        self.conv2d_2 = layers.Conv2D(
+            filters=self.num_filters,
+            padding='same',
+            kernel_size=self.kernel_size,
+            kernel_initializer=self.kernel_initializer,
+        )
+
+        self.batch_norm_layer_2 = layers.BatchNormalization(axis=3)
+
+        self.activation_layer_2 = layers.Activation(self.activation)
+        # Processing residu
+        self.conv_res = layers.Conv2D(
+            filters=self.num_filters,
+            kernel_size=1,
+        )
+
+        # Add residu
+        self.add_layer = layers.Add()
+
+    def call(self, inputs):
+        x = inputs
+
+        x = self.conv2d_1(x)
+        x = self.batch_norm_layer_1(x)
+        x = self.activation_layer_1(x)
+
+        x = self.conv2d_2(x)
+        x = self.batch_norm_layer_2(x)
+        x = self.activation_layer_2(x)
+
+        x_skip = self.conv_res(inputs)
+
+        x = self.add_layer([x, x_skip])
+        return x
+
+    def get_config(self):
+        return dict(
+            kernel_size=self.kernel_size,
+            num_filters=self.num_filters,
+            activation=self.activation,
+            **super().get_config(),
+        )
+
+
 class StandardUpBlock(layers.Layer):
     """Standard Up sampling Block.
     It is compose of:

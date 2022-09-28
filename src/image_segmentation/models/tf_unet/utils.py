@@ -46,7 +46,7 @@ def image_size_end_contract(img_size, id_pool, num_pooling, num_layers_before, k
         elif padding == 'same':
             end_conv_size = img_size
         next_img_size = end_conv_size // 2
-        print(f'{img_size} to {next_img_size} : reste {end_conv_size % 2}')
+
         return image_size_end_contract(
             next_img_size,
             id_pool=id_pool+1,
@@ -70,7 +70,6 @@ def image_size_end_contract_invert(img_size, id_pool, num_pooling, num_layers_be
             end_conv_size = img_size
         next_img_size = end_conv_size * 2
 
-        print(f'{img_size} to {next_img_size}')
         return image_size_end_contract_invert(
             next_img_size,
             id_pool=id_pool+1,
@@ -95,7 +94,6 @@ def image_size_end_expens(img_size, id_pool, num_pooling, num_layers_before, ker
         elif padding == 'same':
             next_img_size = end_upconv_size
 
-        print(f'{img_size} to {next_img_size}')
         return image_size_end_expens(
             next_img_size,
             id_pool=id_pool+1,

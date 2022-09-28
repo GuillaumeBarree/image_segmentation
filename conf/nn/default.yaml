@@ -11,6 +11,8 @@ data:
     val: 2
     test: 2
 
+  repeat: 4
+
   resize:
       _target_: tensorflow.keras.layers.Resizing
       height: 256
@@ -61,6 +63,11 @@ unet:
       kernel_initializer: he_normal
       activation: relu
       batch_norm: False
+
+    resnet_block:
+      kernel_size: 3
+      kernel_initializer: he_normal
+      activation: relu
 
     standard_up_block:
       kernel_size: 2
