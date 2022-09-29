@@ -45,7 +45,7 @@ jobs:
           # Note: tags has to be all lower-case
           tags: |
             guillaumebarree/image_segmentation:latest
-            ghcr.io/GuillaumeBarree/image_segmentation:latest
+            ghcr.io/guillaumebarree/image_segmentation:latest
           # build on feature branches, push only on main branch
           push: ${{ github.ref == 'refs/heads/main' }}
 
