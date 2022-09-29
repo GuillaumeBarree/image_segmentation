@@ -234,6 +234,17 @@ Tensorboad files are saved in the `./tensorboard` folder.
 
   On your local machine, you can access it from `localhost:6006`
 
+### Generate the documentation
+
+```bash
+cd ./docs
+sphinx-apidoc -o ./source ../src
+make html
+
+cd ./build/html
+firefox index.html
+```
+
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 <!-- LICENSE -->
