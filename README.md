@@ -138,7 +138,31 @@ You will need Python 3.8 and pip on your computer and (the package installer for
 
 #### Using Docker
 
-Not done yet
+1. Clone the repo
+
+   ```sh
+   git clone git@github.com:GuillaumeBarree/image_segmentation.git
+   ```
+
+2. Build the docker image
+
+   This will build the docker image and save it in you local Docker Images. If you don't want to build the image and directly download the image build by GitHub Actions, go to step 3
+
+   ```sh
+   cd image_segmentation
+   docker build -t img_seg:v0.0.1 -f docker/Dockerfile.image_segmentation .
+   ```
+
+3. Run the container
+
+  If you want to use the image build by GitHub action, change the image name by [add image name]
+
+  ```sh
+   cd image_segmentation
+   docker run -it -v "$(pwd)"/models:/image_segmentation/models -v "$(pwd)"/tensorboard:/image_segmentation/tensorboard v "$(pwd)"/conf:/image_segmentation/conf img_seg:v0.0.1
+   ```
+
+Now you can to the next section to excute the different command to train or predict. Models, Tensorflow and Conf folder have been mount so that you can change conf directly within your working station.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -191,6 +215,24 @@ The path to the testing artefacts is displayed to the console at the end of the 
 * The model used to predict is saved.
 * The configuration file of the model is saved.
 * Original images and their predictions are saved.
+
+### Tensorboard
+
+Tensorboad files are saved in the `./tensorboard` folder.
+
+* On you local machine.
+
+  ```bash
+  tensorboard --logdir path_to_you_artefact
+  ```
+
+* On Docker
+
+  ```bash
+  tensorboard --logdir path_to_you_artefact --bind_all
+  ```
+
+  On your local machine, you can access it from `localhost:6006`
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
