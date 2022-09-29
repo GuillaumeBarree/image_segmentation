@@ -176,7 +176,7 @@ Now you can to the next section to excute the different command to train or pred
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-**All this project is configurable using configuration files. Their are available in the `conf` folder. For more details about these configuration files, please refer to our specific documentation [[here]](https://github.com/GuillaumeBarree/image_segmentation)**
+**All this project is configurable using configuration files. Their are available in the `conf` folder. For more details about these configuration files, please refer to our specific documentation [[here]](https://github.com/GuillaumeBarree/image_segmentation/blob/master/conf/README.md)**
 
 ### Launch the training from scratch
 
