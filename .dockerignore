@@ -129,7 +129,7 @@ dmypy.json
 .pyre/
 
 # Tensorboard
-/tensorboard/*
+/tensorboard/**/
 
 # Models
-/models/*
+/models/**/
