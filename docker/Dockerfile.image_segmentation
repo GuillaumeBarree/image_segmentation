@@ -1,0 +1,31 @@
+FROM python:3.8-slim-buster
+
+RUN apt-get update && \
+    apt-get install -y \
+      git \
+      build-essential \
+      cmake \
+      unzip \
+      pkg-config \
+      libxmu-dev \
+      libxi-dev \
+      libglu1-mesa \
+      libglu1-mesa-dev \
+      libjpeg-dev \
+      libpng-dev \
+      libopenblas-dev \
+      libatlas-base-dev \
+      liblapack-dev \
+      gfortran \
+      libhdf5-serial-dev
+
+COPY . /image_segmentation
+
+WORKDIR /image_segmentation
+
+ENV TF_CPP_MIN_LOG_LEVEL=3
+ENV HYDRA_FULL_ERROR=1
+
+RUN pip3 install -r requirements.txt && pip3 install -e .
+
+CMD ["bash"]

@@ -37,4 +37,5 @@ else
     python3 -m venv $UNXAPPLI/.venv
     source $UNXAPPLI/.venv/bin/activate
     pip install -r $UNXAPPLI/requirements.txt
+    pip install -e $UNXAPPLI
 fi
