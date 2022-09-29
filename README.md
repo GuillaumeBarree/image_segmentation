@@ -138,6 +138,15 @@ You will need Python 3.8 and pip on your computer and (the package installer for
 
 #### Using Docker
 
+##### Pull the image from GitHub Package Registry
+
+```sh
+docker pull ghcr.io/guillaumebarree/image_segmentation:latest
+docker run -it ghcr.io/guillaumebarree/image_segmentation:latest
+```
+
+##### Build and run docker image
+
 1. Clone the repo
 
    ```sh
@@ -146,20 +155,18 @@ You will need Python 3.8 and pip on your computer and (the package installer for
 
 2. Build the docker image
 
-   This will build the docker image and save it in you local Docker Images. If you don't want to build the image and directly download the image build by GitHub Actions, go to step 3
+   This will build the docker image and save it in you local Docker Images.
 
    ```sh
    cd image_segmentation
-   docker build -t img_seg:v0.0.1 -f docker/Dockerfile.image_segmentation .
+   docker build -t image_segmentation:v0.0.1 -f docker/Dockerfile.image_segmentation .
    ```
 
 3. Run the container
 
-  If you want to use the image build by GitHub action, change the image name by [add image name]
-
   ```sh
    cd image_segmentation
-   docker run -it -v "$(pwd)"/models:/image_segmentation/models -v "$(pwd)"/tensorboard:/image_segmentation/tensorboard v "$(pwd)"/conf:/image_segmentation/conf img_seg:v0.0.1
+   docker run -it -v "$(pwd)"/models:/image_segmentation/models -v "$(pwd)"/tensorboard:/image_segmentation/tensorboard v "$(pwd)"/conf:/image_segmentation/conf image_segmentation:v0.0.1
    ```
 
 Now you can to the next section to excute the different command to train or predict. Models, Tensorflow and Conf folder have been mount so that you can change conf directly within your working station.
